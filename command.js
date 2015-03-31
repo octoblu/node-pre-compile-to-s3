@@ -1,3 +1,4 @@
 #!/usr/bin/env node
 
-console.log("hello world");
+require('coffee-script/register');
+require('./command.coffee');

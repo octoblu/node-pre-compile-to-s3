@@ -1,6 +1,6 @@
 {
   "name": "node-pre-compile-to-s3",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Precompile node apps and publish them to S3",
   "main": "command.js",
   "bin": "./command.js",
@@ -17,5 +17,9 @@
   "bugs": {
     "url": "https://github.com/octoblu/node-pre-compile-to-s3/issues"
   },
-  "homepage": "https://github.com/octoblu/node-pre-compile-to-s3"
+  "homepage": "https://github.com/octoblu/node-pre-compile-to-s3",
+  "dependencies": {
+    "coffee-script": "^1.9.1",
+    "lodash": "^3.6.0"
+  }
 }
