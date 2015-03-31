@@ -1,0 +1,19 @@
+{
+  "name": "node-pre-compile-to-s3",
+  "version": "1.0.0",
+  "description": "Precompile node apps and publish them to S3",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/octoblu/node-pre-compile-to-s3.git"
+  },
+  "author": "Octoblu Inc.",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/octoblu/node-pre-compile-to-s3/issues"
+  },
+  "homepage": "https://github.com/octoblu/node-pre-compile-to-s3"
+}
