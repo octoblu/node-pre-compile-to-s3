@@ -25,7 +25,9 @@ class Command
 
   installPackage: (callback=->) =>
     cmd = "npm --prefix=. install #{@packageName}"
-    exec cmd, (error) => callback error
+    exec cmd, (error, stdout) =>
+      console.log stdout
+      callback error
 
   precompile: (callback=->) =>
     cmd = "npm run precompile --loglevel=silent"
