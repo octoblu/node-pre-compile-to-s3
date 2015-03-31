@@ -15,6 +15,8 @@ class Command
     })
 
   run: (callback=->) =>
+    unless @packageName?
+      return callback new Error('USAGE: node-pre-compile-to-s3 <npm-package-name>')
     {S3_ACCESS_KEY_ID, S3_SECRET_ACCESS_KEY, S3_BUCKET_NAME} = process.env
     unless _.all [S3_ACCESS_KEY_ID, S3_SECRET_ACCESS_KEY, S3_BUCKET_NAME]
       return callback new Error('S3 Credentials not present')
@@ -43,7 +45,6 @@ class Command
     uploader = @client.uploadFile s3Params
     uploader.on 'error', callback
     uploader.on 'end', => callback()
-
 
 command = new Command(process.argv[2..-1].join(''))
 command.run (error) =>
