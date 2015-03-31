@@ -24,7 +24,7 @@ class Command
     async.waterfall [@installPackage, @precompile, @push], callback
 
   installPackage: (callback=->) =>
-    cmd = "npm --prefix=. install #{@packageName}"
+    cmd = "npm --prefix=. install #{@packageName} 2>&1"
     exec cmd, (error, stdout) =>
       console.log stdout
       callback error
