@@ -2,8 +2,10 @@
   "name": "node-pre-compile-to-s3",
   "version": "1.0.0",
   "description": "Precompile node apps and publish them to S3",
-  "main": "index.js",
+  "main": "command.js",
+  "bin": "./command.js",
   "scripts": {
+    "start": "node command.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
