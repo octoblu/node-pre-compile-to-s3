@@ -3,12 +3,6 @@ fs        = require 'fs-extra'
 {exec}    = require 'child_process'
 _         = require 'lodash'
 colors    = require 'colors/safe'
-os        = require 'os'
-path      = require 'path'
-zlib      = require 'zlib'
-tar       = require 'tar'
-fstream   = require 'fstream'
-temp      = require 'temp'
 
 class InstallCommand
   parseOptions: =>
