@@ -6,6 +6,8 @@
   "bin": {
     "node-pre-compile-to-s3": "./command.js",
     "node-pre-compile-to-s3-precompile": "./command-precompile.js"
+    "node-pre-compile-to-s3-install": "./command-install.js"
+    "node-pre-compile-to-s3-upload": "./command-upload.js"
   },
   "scripts": {
     "start": "node command.js",
