@@ -1,0 +1,17 @@
+language: node_js
+cache:
+  bundler: true
+  directories:
+    - node_modules
+node_js:
+- '0.10'
+deploy:
+  provider: npm
+  skip_cleanup: true
+  clean_up: false
+  email: serveradmin@octoblu.com
+  api_key:
+    secure: JS3wi5oAXMN9cnn/eIWb8i99jOxTd31jZE8GZYebBpogLmSYF2P4+GTBwIZTdgkGCAvJWTL0aLeviIud1OA754rte7jLg3Fc5u94eGM7CM9+b7d2p4i/TzBhlRut1tGzc2MS9a2nW/Kr2sab3WJnU+ZQgH3xGsON1KOrkNRy5yE=
+  on:
+    tags: true
+    all_branches: true
