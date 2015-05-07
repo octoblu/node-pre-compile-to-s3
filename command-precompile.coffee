@@ -47,7 +47,7 @@ class PreCompileCommand
     temp.mkdir @getModuleName(), (err, dirPath) =>
       fs.copySync @filename, path.join(dirPath, 'package.json')
       process.chdir dirPath
-      npmOptions = []
+      npmOptions = ['--ignore-scripts']
       npmOptions.push "--production" if @productionOnly
       exec "npm install #{npmOptions.join(' ')}", (error, stdout, stderr) =>
         console.log('exec error: ' + error) unless error == null
