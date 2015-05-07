@@ -1,6 +1,6 @@
 {
   "name": "node-pre-compile-to-s3",
-  "version": "3.0.2",
+  "version": "3.0.3",
   "description": "Precompile node apps and publish them to S3",
   "main": "command.js",
   "bin": {
