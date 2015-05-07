@@ -15,6 +15,7 @@ class PreCompileCommand
     commander
       .option '-p, --path <path>', "Output path (defaults to build)"
       .option '--production', "npm install --production (default true)"
+      .option '--silent', "No output from npm install (default false)"
       .usage '[options] <path/to/package.json>'
       .parse process.argv
 
@@ -27,6 +28,7 @@ class PreCompileCommand
     @buildPath = commander.path || './build'
     @packageJSON = require @filename
     @productionOnly = commander.production? || true
+    @silent = commander.silent || false
 
   getFilename: =>
     [
@@ -51,6 +53,8 @@ class PreCompileCommand
       npmOptions.push "--production" if @productionOnly
       exec "npm install #{npmOptions.join(' ')}", (error, stdout, stderr) =>
         console.log('exec error: ' + error) unless error == null
+        console.log('stdout: ' + stdout) unless @silent
+        console.log('stderr: ' + stderr) unless @silent
 
         process.chdir origDir
         fs.mkdirpSync @buildPath
