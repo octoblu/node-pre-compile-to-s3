@@ -9,6 +9,7 @@ zlib      = require 'zlib'
 tar       = require 'tar'
 fstream   = require 'fstream'
 temp      = require 'temp'
+path      = require 'path'
 
 class PreCompileCommand
   parseOptions: =>
@@ -19,13 +20,8 @@ class PreCompileCommand
       .usage '[options] <path/to/package.json>'
       .parse process.argv
 
-    @filename = _.first commander.args
-    unless @filename?
-      console.error colors.red '\n  You must specify the path to package.json.'
-      commander.outputHelp()
-      process.exit 1
-
-    @buildPath = commander.path || './build'
+    @filename = _.first(commander.args) || path.join(process.cwd(),'package.json')
+    @buildPath = commander.path || path.join(process.cwd(),'build')
     @packageJSON = require @filename
     @productionOnly = commander.production? || true
     @silent = commander.silent || false
