@@ -4,6 +4,8 @@ fs        = require 'fs-extra'
 _         = require 'lodash'
 colors    = require 'colors/safe'
 
+TMP_INSTALL_DIR = '.node-pre-compile-install'
+
 class InstallCommand
   parseOptions: =>
     commander
@@ -21,15 +23,15 @@ class InstallCommand
 
   run: =>
     @parseOptions()
-    origDir = __dirname
-    fs.mkdirpSync @installPath unless fs.existsSync @installPath
-    process.chdir @installPath
+    installTempPath = "#{@installPath}/#{TMP_INSTALL_DIR}"
+    fs.mkdirpSync installTempPath unless fs.existsSync installTempPath
+    process.chdir installTempPath
     cmd = "npm --prefix=. install #{@packageName} 2>&1"
     exec cmd, (error, stdout) =>
+      process.chdir '..'
       console.log('exec error: ' + error) unless error == null
       console.log stdout
-      fs.move "node_modules/#{@packageName}", @packageName, {}, ->
-        fs.removeSync "node_modules"
-        process.chdir origDir
+      fs.move "#{TMP_INSTALL_DIR}/node_modules/#{@packageName}", @packageName, {}, ->
+        fs.removeSync TMP_INSTALL_DIR
 
 (new InstallCommand()).run()

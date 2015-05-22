@@ -30,14 +30,13 @@ class PreCompileCommand
 
     @productionOnly = commander.production? || true
     @silent = commander.silent || false
-    @config = require('node-pre-compile-install/config')(@packageJSON)
-    console.log JSON.stringify(@config,null,2)
+    @config = require('node-pre-compile-install/config')(@packageJSON,commander)
 
   run: =>
     @parseOptions()
     temp.track()
     origDir = __dirname
-    temp.mkdir @packageJSON.name, (err, dirPath) =>
+    temp.mkdir @config.name, (err, dirPath) =>
       fs.copySync @packageFile, path.join(dirPath, 'package.json')
       process.chdir dirPath
       npmOptions = []

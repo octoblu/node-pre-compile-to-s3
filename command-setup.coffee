@@ -16,26 +16,42 @@ class SetupCommand
 
     @packagePath = _.first(commander.args) || process.cwd()
     @packageFile = path.join(@packagePath,'package.json')
+    @readPackageJSON()
+
+  readPackageJSON: =>
+    try
+      @packageJSON = JSON.parse fs.readFileSync(@packageFile)
+    catch error
+      console.error('unable to open', @packageFile)
+      console.error error
+      process.exit(1)
+    @config = require('node-pre-compile-install/config')(@packageJSON,commander)
+
+  updatePackageJSON: =>
+    if @packageJSON.bundleDependencies
+      @packageJSON.bundledDependencies = _.union(@packageJSON.bundleDependencies, @packageJSON.bundledDependencies || [])
+      delete @packageJSON.bundleDependencies
+    @packageJSON.bundledDependencies = _.union(@packageJSON.bundledDependencies || [], [PRE_COMPILE_INSTALL])
+    if @packageJSON.scripts?.preinstall? && @packageJSON.scripts?.preinstall != PRE_COMPILE_INSTALL_EXEC
+      console.log 'Preinstall script already defined, not overriding!'
+    else
+      @packageJSON.scripts.preinstall = PRE_COMPILE_INSTALL_EXEC
+    for key in Object.keys(@config.modified)
+      @packageJSON['node-pre-compile-'+key] = @config[key]
+    fs.writeFileSync(@packageFile, JSON.stringify(@packageJSON,null,2))
 
   run: =>
     @parseOptions()
-
     process.chdir @packagePath
-    cmd = "npm --prefix=. install --save #{PRE_COMPILE_INSTALL} 2>&1"
-    exec cmd, (error, stdout) =>
-      console.log('exec error: ' + error) unless error == null
-      console.log stdout
-      return if error
-
-      @packageJSON = require @packageFile
-      if @packageJSON.bundleDependencies
-        @packageJSON.bundledDependencies = _.union(@packageJSON.bundleDependencies, @packageJSON.bundledDependencies || [])
-        delete @packageJSON.bundleDependencies
-      @packageJSON.bundledDependencies = _.union(@packageJSON.bundledDependencies || [], [PRE_COMPILE_INSTALL])
-      if @packageJSON.scripts?.preinstall? && @packageJSON.scripts?.preinstall != PRE_COMPILE_INSTALL_EXEC
-        console.log 'Preinstall script already defined, not overriding!'
-      else
-        @packageJSON.scripts.preinstall = PRE_COMPILE_INSTALL_EXEC
-      fs.writeFileSync(@packageFile, JSON.stringify(@packageJSON,null,2))
+    if !@packageJSON?.dependencies?['node-pre-compile-install']
+      cmd = "npm --prefix=. install --save #{PRE_COMPILE_INSTALL} 2>&1"
+      exec cmd, (error, stdout) =>
+        console.log('exec error: ' + error) unless error == null
+        console.log stdout
+        return if error
+        @readPackageJSON()
+        @updatePackageJSON()
+    else
+      @updatePackageJSON()
 
 (new SetupCommand()).run()
