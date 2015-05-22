@@ -18,7 +18,6 @@ class UploadCommand
       .usage '[options] filename-name'
       .parse process.argv
 
-
     @packageFile = commander.package || path.join(process.cwd(),'package.json');
 
     @filename = _.first commander.args
@@ -26,6 +25,10 @@ class UploadCommand
       @packageJSON = require @packageFile
     catch error
       console.error('unable to open', @packageFile)
+      console.error error
+      process.exit(1)
+
+    @config = require('node-pre-compile-install/config')(@packageJSON)
 
     unless @filename? || @packageJSON?
       console.error colors.red '\n  You must specify a package name.'
@@ -33,21 +36,12 @@ class UploadCommand
       process.exit 1
 
     unless @filename?
-      @filename = 'build/' + [
-            @packageJSON.name
-            @packageJSON.version
-            os.platform()
-            os.arch()
-            'node-modules'
-          ].join('-') + '.tar.gz'
+      @filename = 'build/' + @config.file
 
     @s3_access_key_id = commander.key || process.env.PRECOMPILE_S3_ACCESS_KEY_ID
     @s3_secret_access_key = commander.secret || process.env.PRECOMPILE_S3_SECRET_ACCESS_KEY
-    @s3_bucket = commander.bucket || 'octoblu-npm'
-    @s3_folder = commander.remoteFolder
-
-    unless @s3_folder?
-      @s3_folder = "npm/#{@packageJSON.name}/#{@packageJSON.version}"
+    @s3_bucket = commander.bucket || @config.bucket
+    @s3_folder = commander.remoteFolder || @config.path
 
     unless @s3_access_key_id? && @s3_secret_access_key?
       console.error colors.red '\n S3 Credentials are required.'
@@ -68,13 +62,11 @@ class UploadCommand
         accessKeyId: @s3_access_key_id
         secretAccessKey: @s3_secret_access_key
 
-    basename = path.basename @filename
-
     s3Params =
       localFile: @filename
       s3Params:
         Bucket: @s3_bucket
-        Key: "#{@s3_folder}/#{basename}"
+        Key: "#{@s3_folder}/#{@config.file}"
 
     uploader = client.uploadFile s3Params
     uploader.on 'error', (error) ->

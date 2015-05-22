@@ -8,6 +8,7 @@ class Command
       .command 'precompile', 'precompile node_modules'
       .command 'install', 'install a package'
       .command 'upload', 'upload the compiled node_modules tarball'
+      .command 'setup', 'configure a package to use the pre-compile installer'
       .parse process.argv
 
     unless commander.runningCommand

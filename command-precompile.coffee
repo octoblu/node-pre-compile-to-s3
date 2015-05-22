@@ -9,7 +9,6 @@ zlib      = require 'zlib'
 tar       = require 'tar'
 fstream   = require 'fstream'
 temp      = require 'temp'
-path      = require 'path'
 
 class PreCompileCommand
   parseOptions: =>
@@ -20,30 +19,26 @@ class PreCompileCommand
       .usage '[options] <path/to/package.json>'
       .parse process.argv
 
-    @filename = _.first(commander.args) || path.join(process.cwd(),'package.json')
+    @packageFile = _.first(commander.args) || path.join(process.cwd(),'package.json')
     @buildPath = commander.path || path.join(process.cwd(),'build')
-    @packageJSON = require @filename
+    try
+      @packageJSON = require @packageFile
+    catch error
+      console.error "unable to open #{@packageFile}"
+      console.error error
+      process.exit(1)
+
     @productionOnly = commander.production? || true
     @silent = commander.silent || false
-
-  getFilename: =>
-    [
-      @packageJSON.name
-      @packageJSON.version
-      os.platform()
-      os.arch()
-      'node-modules'
-    ].join('-') + '.tar.gz'
-
-  getModuleName: =>
-    @packageJSON.name
+    @config = require('node-pre-compile-install/config')(@packageJSON)
+    console.log JSON.stringify(@config,null,2)
 
   run: =>
     @parseOptions()
     temp.track()
     origDir = __dirname
-    temp.mkdir @getModuleName(), (err, dirPath) =>
-      fs.copySync @filename, path.join(dirPath, 'package.json')
+    temp.mkdir @packageJSON.name, (err, dirPath) =>
+      fs.copySync @packageFile, path.join(dirPath, 'package.json')
       process.chdir dirPath
       npmOptions = []
       npmOptions.push "--production" if @productionOnly
@@ -54,8 +49,7 @@ class PreCompileCommand
 
         process.chdir origDir
         fs.mkdirpSync @buildPath
-        filename = @getFilename()
-        destination = path.join @buildPath, filename
+        destination = path.join @buildPath, @config.file
         console.log destination
 
         options =
