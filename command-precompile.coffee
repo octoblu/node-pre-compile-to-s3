@@ -30,6 +30,7 @@ class PreCompileCommand
     [
       @packageJSON.name
       @packageJSON.version
+      process.version
       os.platform()
       os.arch()
       'node-modules'
